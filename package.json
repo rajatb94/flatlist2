@@ -1,6 +1,6 @@
 {
   "name": "flatlist2",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "FlatList2 gives u an upgraded version of FlatList. Here you can track your items easily that takes a lot of time to concur with traditional FlatList.",
   "main": "index.js",
   "scripts": {
