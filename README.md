@@ -21,10 +21,10 @@ You can now track which item has just entered the visible area using ``` onCurre
 	var itemsAr=[];// array of items
 	<FlatList2
 	    pagingEnabled
-            data={itemsAr.map((itm, index)=>{itm.key=index;return itm;})}
-            renderItem={({item, index}) => {return <MyItem key={index} data={item}/>}}
-            onCurrentItemChanged={(curItemSeq)=>{console.log(curItemSeq)}}
-    	/>
+		data={itemsAr.map((itm, index)=>{itm.key=index;return itm;})}
+		renderItem={({item, index}) => {return <MyItem key={index} data={item}/>}}
+		onCurrentItemChanged={(curItemSeq)=>{console.log(curItemSeq)}}
+    />
 ```
 
 ### Extra Props:
