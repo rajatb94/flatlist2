@@ -8,6 +8,8 @@ class FlatList2 extends React.Component {
     this.itemsRef=[];
     this.isItemsPosDone=false;
     this.curItem=0;
+    this.prvDirection=null;
+    this.prvOffset=0;
   }
   addToItems(index, itemRef){
     var self=this;
@@ -28,7 +30,27 @@ class FlatList2 extends React.Component {
     var self=this;
     if(this.props.onScroll)
         this.props.onScroll(e);
-    var scrollOffset = e.nativeEvent.contentOffset.y;
+    var scrollOffset = (self.props.horizontal)?e.nativeEvent.contentOffset.x:e.nativeEvent.contentOffset.y;
+    setTimeout(function(){
+        if(self.props.onScrollDirectionChanged){
+            var fDir=(self.props.horizontal)?"left":"up";
+            var sDir=(self.props.horizontal)?"right":"down";
+            if(scrollOffset>self.prvOffset){
+                if(self.prvDirection!=sDir){
+                    self.prvDirection=sDir;
+                    self.props.onScrollDirectionChanged(sDir);
+                }
+            }else if(scrollOffset<self.prvOffset){
+                if(self.prvDirection!=fDir){
+                    self.prvDirection=fDir;
+                    self.props.onScrollDirectionChanged(fDir);
+                }
+            }
+            self.prvOffset=scrollOffset;
+        }
+    },0);
+    
+    
     if(!self.isItemsPosDone){
         self.getItemsPos()
         .then(function(){
@@ -45,11 +67,18 @@ class FlatList2 extends React.Component {
   getCurrentItem(scrollOffset){
     var self=this;
     var itemsLen=self.itemsRef.length;
-    var bottomOffset=self.props.bottomOffset||0;
+    if(self.props.horizontal){
+        var endOffset=self.props.rightOffset||0;
+    }else{
+        var endOffset=self.props.bottomOffset||0;
+    }
     for(var i in self.itemsRef){
         var itemPos=self.itemsRef[itemsLen-i-1].pos;
-        if(scrollOffset>=(itemPos-self.viewHeight+bottomOffset)){
+        
+        var viewMeasure=(self.props.horizontal)?self.viewWidth:self.viewHeight;
+        if(scrollOffset>=(itemPos-viewMeasure+endOffset)){
             self.curItem=itemsLen-i-1;
+            
             return self.curItem;
         }
     }
@@ -80,7 +109,7 @@ class FlatList2 extends React.Component {
     var superContainerStyle=this.props.containerStyle||{};
     var {onScroll, renderItem, data, ...others}=this.props;
     return (
-        <View ref={(view)=>{this.view=view}} onLayout={(e)=>{this.viewHeight=e.nativeEvent.layout.height}}  style={[{width: "100%", height: "100%"}, superContainerStyle]}>
+        <View ref={(view)=>{this.view=view}} onLayout={(e)=>{this.viewHeight=e.nativeEvent.layout.height; this.viewWidth=e.nativeEvent.layout.width}}  style={[{width: "100%", height: "100%"}, superContainerStyle]}>
             
             <FlatList
                 {...others}
